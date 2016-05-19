@@ -192,7 +192,7 @@ const std::map<UnwrappedTileID, Tile>& Source::getTiles() const {
 
 std::unique_ptr<TileData> Source::createTile(const OverscaledTileID& overscaledTileID,
                                              const StyleUpdateParameters& parameters) {
-    std::unique_ptr<TileData> data = cache.get(overscaledTileID);
+    auto data = cache.get(overscaledTileID);
     if (data) {
         return data;
     }
@@ -202,16 +202,22 @@ std::unique_ptr<TileData> Source::createTile(const OverscaledTileID& overscaledT
 
     // If we don't find working tile data, we're just going to load it.
     if (type == SourceType::Raster) {
-        std::unique_ptr<RasterTileSource> monitor;
-        monitor = std::make_unique<RasterTileSource>(overscaledTileID, parameters.pixelRatio, info->tiles.at(0), parameters.fileSource);
-
+        assert(!info->tiles.empty());
+        const auto resource =
+            Resource::tile(info->tiles.front(), parameters.pixelRatio, overscaledTileID.canonical.x,
+                           overscaledTileID.canonical.y, overscaledTileID.canonical.z);
+        auto monitor = std::make_unique<RasterTileSource>(resource, parameters.fileSource);
         data = std::make_unique<RasterTileData>(overscaledTileID, std::move(monitor),
                                                 parameters.texturePool, parameters.worker, callback);
     } else {
         std::unique_ptr<GeometryTileSource> monitor;
 
         if (type == SourceType::Vector) {
-            monitor = std::make_unique<VectorTileSource>(overscaledTileID, parameters.pixelRatio, info->tiles.at(0), parameters.fileSource);
+            assert(!info->tiles.empty());
+            const auto resource = Resource::tile(
+                info->tiles.front(), parameters.pixelRatio, overscaledTileID.canonical.x,
+                overscaledTileID.canonical.y, overscaledTileID.canonical.z);
+            monitor = std::make_unique<VectorTileSource>(resource, parameters.fileSource);
         } else if (type == SourceType::Annotations) {
             monitor = std::make_unique<AnnotationTileSource>(overscaledTileID, parameters.annotationManager);
         } else if (type == SourceType::GeoJSON) {

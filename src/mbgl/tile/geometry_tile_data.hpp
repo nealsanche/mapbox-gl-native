@@ -16,16 +16,16 @@ class AsyncRequest;
 class GeometryTileSource;
 class FeatureIndex;
 
-class VectorTileData : public TileData {
+class GeometryTileData : public TileData {
 public:
-    VectorTileData(const OverscaledTileID&,
-                   std::unique_ptr<GeometryTileSource> tileSource,
-                   std::string sourceID,
-                   Style&,
-                   const MapMode,
-                   const std::function<void(std::exception_ptr)>& callback);
+    GeometryTileData(const OverscaledTileID&,
+                     std::unique_ptr<GeometryTileSource> tileSource,
+                     std::string sourceID,
+                     Style&,
+                     const MapMode,
+                     const std::function<void(std::exception_ptr)>& callback);
 
-    ~VectorTileData();
+    ~GeometryTileData();
 
     Bucket* getBucket(const StyleLayer&) override;
 

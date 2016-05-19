@@ -19,7 +19,7 @@ class FeatureIndex;
 class VectorTileData : public TileData {
 public:
     VectorTileData(const OverscaledTileID&,
-                   std::unique_ptr<GeometryTileSource> monitor,
+                   std::unique_ptr<GeometryTileSource> tileSource,
                    std::string sourceID,
                    Style&,
                    const MapMode,
@@ -47,7 +47,6 @@ private:
     Worker& worker;
     TileWorker tileWorker;
 
-    std::unique_ptr<GeometryTileSource> monitor;
     std::unique_ptr<AsyncRequest> tileRequest;
     std::unique_ptr<AsyncRequest> workRequest;
 

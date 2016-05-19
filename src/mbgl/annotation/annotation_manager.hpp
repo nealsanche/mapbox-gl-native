@@ -17,7 +17,7 @@ namespace mbgl {
 class PointAnnotation;
 class ShapeAnnotation;
 class AnnotationTile;
-class AnnotationTileMonitor;
+class AnnotationTileSource;
 class Style;
 
 class AnnotationManager : private util::noncopyable {
@@ -39,8 +39,8 @@ public:
 
     void updateStyle(Style&);
 
-    void addTileMonitor(AnnotationTileMonitor&);
-    void removeTileMonitor(AnnotationTileMonitor&);
+    void addTileSource(AnnotationTileSource&);
+    void removeTileSource(AnnotationTileSource&);
 
     static const std::string SourceID;
     static const std::string PointLayerID;
@@ -53,7 +53,7 @@ private:
     PointAnnotationImpl::Map pointAnnotations;
     ShapeAnnotationImpl::Map shapeAnnotations;
     std::vector<std::string> obsoleteShapeAnnotationLayers;
-    std::set<AnnotationTileMonitor*> monitors;
+    std::set<AnnotationTileSource*> monitors;
 
     SpriteStore spriteStore;
     SpriteAtlas spriteAtlas;

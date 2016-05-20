@@ -24,15 +24,17 @@ class TileSource;
 
 class TileData : private util::noncopyable {
 public:
-    TileData(const OverscaledTileID&, std::unique_ptr<TileSource>);
+    TileData(const OverscaledTileID&);
     virtual ~TileData();
+
+    void setTileSource(std::unique_ptr<TileSource>);
 
     // Mark this tile as no longer needed and cancel any pending work.
     virtual void cancel() = 0;
 
     virtual Bucket* getBucket(const StyleLayer&) = 0;
 
-    virtual bool parsePending(std::function<void (std::exception_ptr)>) { return true; }
+    virtual bool parsePending() { return true; }
     virtual void redoPlacement(PlacementConfig, const std::function<void()>&) {}
     virtual void redoPlacement(const std::function<void()>&) {}
 
@@ -56,12 +58,12 @@ public:
         return availableData == DataAvailability::Some;
     }
 
+
     void dumpDebugLogs() const;
 
     const OverscaledTileID id;
     optional<Timestamp> modified;
     optional<Timestamp> expires;
-    const std::unique_ptr<TileSource> tileSource;
 
     // Contains the tile ID string for painting debug information.
     std::unique_ptr<DebugBucket> debugBucket;
@@ -81,6 +83,8 @@ protected:
     };
 
     DataAvailability availableData = DataAvailability::None;
+
+    std::unique_ptr<TileSource> tileSource;
 };
 
 } // namespace mbgl

@@ -30,6 +30,7 @@ public:
 
     void setObserver(TileDataObserver* observer);
     void setTileSource(std::unique_ptr<TileSource>);
+    TileSource* getTileSource() { return tileSource.get(); }
 
     // Mark this tile as no longer needed and cancel any pending work.
     virtual void cancel() = 0;
@@ -59,7 +60,6 @@ public:
     bool isIncomplete() const {
         return availableData == DataAvailability::Some;
     }
-
 
     void dumpDebugLogs() const;
 

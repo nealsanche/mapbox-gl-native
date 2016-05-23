@@ -14,8 +14,7 @@ class RasterTileData : public TileData {
 public:
     RasterTileData(const OverscaledTileID&,
                    gl::TexturePool&,
-                   Worker&,
-                   const std::function<void(std::exception_ptr)>& callback);
+                   Worker&);
     ~RasterTileData();
 
     void setData(std::exception_ptr err,
@@ -35,8 +34,6 @@ private:
     // Contains the Bucket object for the tile. Buckets are render
     // objects and they get added by tile parsing operations.
     std::unique_ptr<Bucket> bucket;
-
-    const std::function<void(std::exception_ptr)> callback;
 };
 
 } // namespace mbgl

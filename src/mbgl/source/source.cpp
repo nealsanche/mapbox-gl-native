@@ -196,9 +196,6 @@ std::unique_ptr<TileData> Source::createTile(const OverscaledTileID& overscaledT
         return data;
     }
 
-    auto callback = std::bind(&Source::tileLoadingCallback, this, overscaledTileID,
-                              std::placeholders::_1, true);
-
     // If we don't find working tile data, we're just going to load it.
     if (type == SourceType::Raster) {
         assert(!info->tiles.empty());
@@ -206,7 +203,8 @@ std::unique_ptr<TileData> Source::createTile(const OverscaledTileID& overscaledT
             Resource::tile(info->tiles.front(), parameters.pixelRatio, overscaledTileID.canonical.x,
                            overscaledTileID.canonical.y, overscaledTileID.canonical.z);
         auto data = std::make_unique<RasterTileData>(overscaledTileID, parameters.texturePool,
-                                                     parameters.worker, callback);
+                                                     parameters.worker);
+        data->setObserver(this);
         data->setTileSource(
             std::make_unique<ImageTileSource>(*data, resource, parameters.fileSource));
 
@@ -215,7 +213,8 @@ std::unique_ptr<TileData> Source::createTile(const OverscaledTileID& overscaledT
         return std::move(data);
     } else {
         auto data = std::make_unique<GeometryTileData>(overscaledTileID, id, parameters.style,
-                                                       parameters.mode, callback);
+                                                       parameters.mode);
+        data->setObserver(this);
         if (type == SourceType::Vector) {
             assert(!info->tiles.empty());
             const auto resource = Resource::tile(
@@ -326,6 +325,9 @@ bool Source::update(const StyleUpdateParameters& parameters) {
         }
     }
 
+    const PlacementConfig newConfig{ parameters.transformState.getAngle(),
+                                     parameters.transformState.getPitch(),
+                                     parameters.debugOptions & MapDebugOptions::Collision };
     for (auto& pair : tileDataMap) {
         auto tileData = pair.second.get();
         if (parameters.shouldReparsePartialTiles && tileData->isIncomplete()) {
@@ -333,10 +335,7 @@ bool Source::update(const StyleUpdateParameters& parameters) {
                 allTilesUpdated = false;
             }
         } else {
-            tileData->redoPlacement({ parameters.transformState.getAngle(),
-                                      parameters.transformState.getPitch(),
-                                      parameters.debugOptions & MapDebugOptions::Collision },
-                                    [this]() { observer->onPlacementRedone(); });
+            tileData->redoPlacement(newConfig);
         }
     }
 
@@ -405,28 +404,17 @@ void Source::setObserver(SourceObserver* observer_) {
     observer = observer_;
 }
 
-void Source::tileLoadingCallback(const OverscaledTileID& tileID,
-                                 std::exception_ptr error,
-                                 bool isNewTile) {
-    auto it = tileDataMap.find(tileID);
-    if (it == tileDataMap.end()) {
-        return;
-    }
+void Source::onTileLoaded(TileData& tileData, bool isNewTile) {
+    tileData.redoPlacement();
+    observer->onTileLoaded(*this, tileData.id, isNewTile);
+}
 
-    auto& tileData = it->second;
-    if (!tileData) {
-        return;
-    }
+void Source::onTileError(TileData& tileData, std::exception_ptr error) {
+    observer->onTileError(*this, tileData.id, error);
+}
 
-    if (error) {
-        observer->onTileError(*this, tileID, error);
-        return;
-    }
-
-    tileData->redoPlacement([this]() {
-        observer->onPlacementRedone();
-    });
-    observer->onTileLoaded(*this, tileID, isNewTile);
+void Source::onPlacementRedone(TileData&) {
+    observer->onPlacementRedone();
 }
 
 void Source::dumpDebugLogs() const {

@@ -1,7 +1,7 @@
 #include <mbgl/tile/geometry_tile_data.hpp>
 #include <mbgl/tile/tile_data_observer.hpp>
 #include <mbgl/tile/tile_source.hpp>
-#include <mbgl/tile/geometry_tile.hpp>
+#include <mbgl/tile/vector_tile.hpp>
 #include <mbgl/style/style_layer.hpp>
 #include <mbgl/util/worker.hpp>
 #include <mbgl/util/work_request.hpp>
@@ -29,15 +29,13 @@ GeometryTileData::GeometryTileData(const OverscaledTileID& id_,
                  mode_) {
 }
 
-void GeometryTileData::setData(std::exception_ptr err,
-                               std::unique_ptr<GeometryTile> tile,
+void GeometryTileData::setError(std::exception_ptr err) {
+    observer->onTileError(*this, err);
+}
+
+void GeometryTileData::setData(std::unique_ptr<GeometryTile> tile,
                                optional<Timestamp> modified_,
                                optional<Timestamp> expires_) {
-    if (err) {
-        observer->onTileError(*this, err);
-        return;
-    }
-
     modified = modified_;
     expires = expires_;
 

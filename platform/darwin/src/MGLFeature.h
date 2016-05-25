@@ -85,30 +85,18 @@ NS_ASSUME_NONNULL_BEGIN
  The `MGLPointFeature` class represents a point in a vector tile source.
  */
 @interface MGLPointFeature : MGLPointAnnotation <MGLFeature>
-
-@property (nonatomic, copy, nullable, readwrite) id identifier;
-@property (nonatomic, copy, readwrite) NS_DICTIONARY_OF(NSString *, id) *attributes;
-
 @end
 
 /**
  The `MGLPolylineFeature` class represents a polyline in a vector tile source.
  */
 @interface MGLPolylineFeature : MGLPolyline <MGLFeature>
-
-@property (nonatomic, copy, nullable, readwrite) id identifier;
-@property (nonatomic, copy, readwrite) NS_DICTIONARY_OF(NSString *, id) *attributes;
-
 @end
 
 /**
  The `MGLPolygonFeature` class represents a polygon in a vector tile source.
  */
 @interface MGLPolygonFeature : MGLPolygon <MGLFeature>
-
-@property (nonatomic, copy, nullable, readwrite) id identifier;
-@property (nonatomic, copy, readwrite) NS_DICTIONARY_OF(NSString *, id) *attributes;
-
 @end
 
 /**
@@ -116,10 +104,6 @@ NS_ASSUME_NONNULL_BEGIN
  source.
  */
 @interface MGLMultiPointFeature : MGLMultiPoint <MGLFeature>
-
-@property (nonatomic, copy, nullable, readwrite) id identifier;
-@property (nonatomic, copy, readwrite) NS_DICTIONARY_OF(NSString *, id) *attributes;
-
 @end
 
 /**
@@ -127,10 +111,6 @@ NS_ASSUME_NONNULL_BEGIN
  source.
  */
 @interface MGLMultiPolylineFeature : MGLMultiPolyline <MGLFeature>
-
-@property (nonatomic, copy, nullable, readwrite) id identifier;
-@property (nonatomic, copy, readwrite) NS_DICTIONARY_OF(NSString *, id) *attributes;
-
 @end
 
 /**
@@ -138,10 +118,6 @@ NS_ASSUME_NONNULL_BEGIN
  source.
  */
 @interface MGLMultiPolygonFeature : MGLMultiPolygon <MGLFeature>
-
-@property (nonatomic, copy, nullable, readwrite) id identifier;
-@property (nonatomic, copy, readwrite) NS_DICTIONARY_OF(NSString *, id) *attributes;
-
 @end
 
 /**
@@ -149,10 +125,6 @@ NS_ASSUME_NONNULL_BEGIN
  tile source.
  */
 @interface MGLShapeCollectionFeature : MGLShapeCollection <MGLFeature>
-
-@property (nonatomic, copy, nullable, readwrite) id identifier;
-@property (nonatomic, copy, readwrite) NS_DICTIONARY_OF(NSString *, id) *attributes;
-
 @end
 
 NS_ASSUME_NONNULL_END

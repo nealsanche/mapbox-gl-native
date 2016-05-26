@@ -91,8 +91,10 @@ void ShapeAnnotationImpl::updateTile(const CanonicalTileID& tileID, AnnotationTi
         std::vector<geojsonvt::LonLat> points;
 
         for (size_t i = 0; i < shape.segments[0].size(); ++i) { // first segment for now (no holes)
-            const double constrainedLatitude = util::clamp(shape.segments[0][i].latitude, -util::LATITUDE_MAX, util::LATITUDE_MAX);
-            points.push_back(geojsonvt::LonLat(shape.segments[0][i].longitude, constrainedLatitude));
+            const LatLng& latLng = shape.segments[0][i];
+            const double wrappedLongitude = util::wrap(latLng.longitude, -util::LONGITUDE_MAX, util::LONGITUDE_MAX);
+            const double clampedLatitude = util::clamp(latLng.latitude, -util::LATITUDE_MAX, util::LATITUDE_MAX);
+            points.push_back(geojsonvt::LonLat(wrappedLongitude, clampedLatitude));
         }
 
         if (type == geojsonvt::ProjectedFeatureType::Polygon &&
